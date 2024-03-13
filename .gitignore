@@ -1,0 +1,13 @@
+venv/
+env/
+.vscode/
+
+.idea/
+.env
+.env.test
+
+__pycache__/
+*.pyc
+*.wav
+
+.DS_Store
