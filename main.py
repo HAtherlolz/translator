@@ -3,18 +3,18 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from contextlib import asynccontextmanager
 
-# from conf.databases import init_db, ping_db
+from config.databases import init_db, ping_db
 from config.conf import settings
 from app.api.router import router
 
 
-# @asynccontextmanager
-# async def lifespan(app: FastAPI):
-#     client = await init_db()
-#     await ping_db(client)
-#     print("Starting up")
-#     yield
-#     print("Shutting down")
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    client = await init_db()
+    await ping_db(client)
+    print("Starting up")
+    yield
+    print("Shutting down")
 
 
 app = FastAPI(
@@ -23,7 +23,8 @@ app = FastAPI(
     redoc_url="/api/v1/redoc/",
     title="Vacancies parsers",
     description="Backend for vacancies parsers",
-    version="0.1"
+    version="0.1",
+    lifespan=lifespan
 )
 
 app.add_middleware(

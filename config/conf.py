@@ -13,6 +13,11 @@ class Settings(BaseConfig):
     OPENAI_VERSION: str = os.getenv("OPENAI_VERSION")
     ASSEMBLYAI_TOKEN: str = os.getenv("ASSEMBLYAI_TOKEN")
 
+    # DATABASE creds
+    DB_USER: str = os.getenv("DB_USER")
+    DB_PASSWORD: str = os.getenv("DB_PASSWORD")
+    DB_CLUSTER: str = os.getenv("DB_CLUSTER")
+
     # Allowed hosts
     BACKEND_CORS_ORIGINS: list = [
         "http://localhost",
