@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from uuid import UUID
 
 from typing import Optional, List
@@ -10,10 +12,13 @@ class UserCreate(BaseModel):
 
 
 class UserSchema(UserCreate):
-    uuid: Optional[UUID]
+    uuid: str
+    date_created: datetime = datetime.now()
 
 
 class RoomSchema(BaseModel):
-    room_uuid: Optional[UUID]
+    room_uuid: str
     users: List[UserSchema]
+    creator: UserSchema
+    date_created: datetime = datetime.now()
 
