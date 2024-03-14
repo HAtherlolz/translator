@@ -19,5 +19,5 @@ async def websocket_endpoint(websocket: WebSocket, room_uuid: str, user_uuid: st
             user_in_room = True
 
     if not user_in_room:
-
+        pass
 

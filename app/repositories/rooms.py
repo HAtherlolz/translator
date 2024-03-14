@@ -9,7 +9,6 @@ from app.schemas.rooms import UserCreate, UserSchema, RoomSchema
 
 
 async def save_user(user: UserSchema) -> User:
-    print("===== user.uuid =========", type(user.uuid))
     user = User(name=user.name, second_name=user.second_name, uuid=user.uuid)
     return await user.insert()
 
@@ -21,8 +20,6 @@ async def get_user(uuid: str) -> User:
 
 async def save_room(user_uuid: str) -> Room:
     user = await get_user(user_uuid)
-
-    print(user)
     room = Room(users=[user], room_uuid=str(uuid.uuid4()), creator=user)
     room = await room.insert()
     return room
