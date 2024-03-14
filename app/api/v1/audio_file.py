@@ -1,6 +1,7 @@
 from fastapi import APIRouter, UploadFile, File, Form
 
 from app.schemas.responses import ResponseTranslate
+from app.schemas.request import RequestTranslate
 from app.services.audio import translate_from_file, translate_from_text
 
 
@@ -18,7 +19,8 @@ async def upload_audio(
 
 @api_translate.post("/translate/", response_model=ResponseTranslate, status_code=200)
 async def translate_txt(
-        language_to: str,
-        text: str
+        language_to: str = Form(...),
+        text: str = Form(...)
 ):
-    return await translate_from_text(language_to, text)
+    body = RequestTranslate(language_to=language_to, text=text)
+    return await translate_from_text(body)
