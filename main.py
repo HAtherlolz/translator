@@ -6,6 +6,7 @@ from contextlib import asynccontextmanager
 from config.databases import init_db, ping_db
 from config.conf import settings
 from app.api.router import router
+from app.api.ws.ws_router import ws_router
 
 
 @asynccontextmanager
@@ -36,3 +37,4 @@ app.add_middleware(
 )
 
 app.include_router(router)
+app.include_router(ws_router)

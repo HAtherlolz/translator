@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebRTC Test</title>
+</head>
+<body>
+    <video id="localVideo" autoplay></video>
+    <video id="remoteVideo" autoplay></video>
+
+    <script>
+        const localVideo = document.getElementById('localVideo');
+        const remoteVideo = document.getElementById('remoteVideo');
+        let pc;
+
+        // Function to handle WebSocket connection and WebRTC signaling
+        async function connect() {
+            const roomID = "c62c5b59-3adb-4556-8f4c-1d3ffd1c622a";  // Specify the room ID
+            const userID = "407fc93a-99e2-4c42-ad6f-41d052767e9f"
+
+            // Connect to WebSocket server
+            const ws = new WebSocket(`ws://localhost:8000/api/ws/${roomID}/${userID}/`);
+
+            // Handle WebSocket events
+            ws.onopen = async () => {
+                console.log('WebSocket connected');
+                // Create RTCPeerConnection
+                pc = new RTCPeerConnection();
+
+                // Add local stream to RTCPeerConnection
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+                stream.getTracks().forEach(track => pc.addTrack(track, stream));
+
+                // Set up event handlers
+                pc.ontrack = event => {
+                    remoteVideo.srcObject = event.streams[0];
+                };
+                pc.onicecandidate = event => {
+                    if (event.candidate) {
+                        // Send ICE candidate to server
+                        ws.send(JSON.stringify({ type: 'candidate', candidate: event.candidate }));
+                    }
+                };
+
+                // Create and send SDP offer to server
+                const offer = await pc.createOffer();
+                await pc.setLocalDescription(offer);
+                ws.send(JSON.stringify({ type: 'offer', sdp: pc.localDescription.sdp }));
+            };
+
+            ws.onmessage = async event => {
+                const message = JSON.parse(event.data);
+                if (message.type === 'answer') {
+                    // Set remote description with received SDP answer
+                    await pc.setRemoteDescription(new RTCSessionDescription(message));
+                } else if (message.type === 'candidate') {
+                    // Add ICE candidate to RTCPeerConnection
+                    await pc.addIceCandidate(message.candidate);
+                }
+            };
+
+            ws.onerror = error => {
+                console.error('WebSocket error:', error);
+            };
+
+            ws.onclose = () => {
+                console.log('WebSocket closed');
+            };
+        }
+
+        // Connect to WebSocket and start WebRTC connection
+        connect();
+    </script>
+</body>
+</html>
